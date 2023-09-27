@@ -38,9 +38,9 @@ router.get("/:pid", async (req, res) => {
 //new
 router.post("/", async (req, res) => {
     const { title, description, code, price, stock, category, thumbnails, status } = req.body;
-    console.log(req.body);
+
     if (!title || !description || !code || !price || !stock || !category) {
-        return res.status(400).json({ message: `Requiered data is misssing` });
+        return res.status(400).json({ message: `Required data is misssing` });
     }
 
     try {
@@ -72,20 +72,23 @@ router.delete("/:pid", async (req, res) => {
 //update
 router.put("/:pid", async (req, res) => {
     const { pid } = req.params;
-    const { updatedFields } = req.body;
 
     try {
         const product = await productsManager.getProductById(+pid);
+        
         if (!product) {
             return res.status(404).json({ message: `No product found with that id ${pid} ` });
         }
-        await productsManager.updateProduct(pid, updatedFields);
-        res.status(200).json({ message: 'Product updated', product });
+        // Actualizar el producto
+        await productsManager.updateProduct(+pid, req.body);
+        const productUpdated = await productsManager.getProductById(+pid);
 
+        res.status(200).json({ message: 'Product updated', product: productUpdated });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 
 export default router;

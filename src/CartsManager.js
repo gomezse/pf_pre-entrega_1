@@ -1,6 +1,6 @@
 import { existsSync, promises } from "fs";
 import { productsManager } from "./ProductManager.js";
-const path = "./data/CartsFile.json";
+const path = "./data/carrito.json";
 
 class CartsManager {
 
@@ -20,14 +20,12 @@ class CartsManager {
     }
 
     //getAll 
-    async getCarts(queryObj = {}) {
-        const { limit } = queryObj;
-
+    async getCarts() {
         try {
             if (existsSync(path)) {
                 const cartsFile = await promises.readFile(path, 'utf-8');
                 const cartsData = JSON.parse(cartsFile);
-                return limit ? cartsData.slice(0, +limit) : cartsData;
+                return  cartsData;
             } else {
                 return [];
             }
@@ -57,23 +55,33 @@ class CartsManager {
 
     //add product to cart
     async addProductToCart(cid, pid) {
+     
         //validate cart
         const cart = await this.getCartById(cid);
         if (!cart) { throw new Error("There is no cart for that id"); }
 
         //validate product
-        const product = await productsManager.getProductById(pid);
+        const product = await productsManager.getProductById(+pid);
         if (!product) { throw new Error("There is no product for that id"); }
 
         //exist product in cart ?
-        const productIndex = cart.products.findIndex(product => product.id === pid)
+        const productIndex = cart.products.findIndex(product => product.product=== +pid)
 
-        //add product to cart
         if (productIndex === -1) {
             cart.products.push({ product: pid, quantity: 1 });
-        } else {
-            cart.products[productIndex].quantity++;
+        } else {       
+            cart.products[productIndex].quantity++;                
         }
+        
+        //update file
+        const carts = await this.getCarts();
+        const cartIndex =carts.findIndex(cart=> cart.id ===cid);
+        
+        carts[cartIndex]=cart;
+        
+        await promises.writeFile(path, JSON.stringify(carts));
+        
+
     }
 
 }

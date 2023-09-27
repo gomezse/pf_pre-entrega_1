@@ -1,6 +1,6 @@
 import { existsSync, promises } from "fs";
 
-const path = "./data/ProductsFile.json";
+const path = "./data/productos.json";
 
 class ProductManager {
 
@@ -84,15 +84,14 @@ class ProductManager {
 
     //Eliminar un objeto del archivo
     async deleteProduct(id) {
-        try {
-            const products = await this.getUsers({});
+        try {            
+            const products = await this.getProducts();            
             const product = products.find((u) => u.id === id);
-
+            
             if (product) {
                 const newArrayProducts = products.filter((product) => product.id !== id);
                 await promises.writeFile(path, JSON.stringify(newArrayProducts));
-            }
-
+            }            
             return product;
 
         } catch (error) {
@@ -103,20 +102,21 @@ class ProductManager {
     //Modificar parcial o total los atributos de un objeto del archivo.(sin modificar su id)
     async updateProduct(id, updatedFields) {
         try {
+           
             const products = await this.getProducts();
-            const productIndex = products.findIndex(product => product.id === id);
+            const productIndex = products.findIndex(product => product.id === +id);
 
             if (productIndex === -1) {
                 return null;
             }
-
+      
             const updatedProduct = { ...products[productIndex], ...updatedFields };
 
             //forzar que por mas que venga el id como parametro a modificar, no se cambie.
             updatedProduct.id = products[productIndex].id;
 
             products[productIndex] = updatedProduct;
-            products.splice(index, 1, updatedProduct);
+  
             await promises.writeFile(path, JSON.stringify(products));
 
             return updatedProduct;
@@ -125,7 +125,7 @@ class ProductManager {
             return error;
         }
     }
-
+    
 }
 
 export const productsManager = new ProductManager();

@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
 
 
 //getById
-router.post("/:cid", async (req, res) => {
+router.get("/:cid", async (req, res) => {
     const { cid } = req.params;
     try {
         const cart = await cartsManager.getCartById(+cid);
