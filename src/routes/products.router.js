@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { productsManager } from '../ProductManager.js';
+import { productsManager } from '../dao/models/mongoose/ProductsManager.js';
 
 const router = Router();
 
 //getAll
 router.get("/", async (req, res) => {
     try {
-        const products = await productsManager.getProducts(req.query);
+        const products = await productsManager.findAll(req.query.limit);
 
         if (!products.length) {
             return res.status(200).json({ message: 'No products' });
@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 router.get("/:pid", async (req, res) => {
     const { pid } = req.params;
     try {
-        const product = await productsManager.getProductById(+pid);
+        const product = await productsManager.findById(pid);
         if (!product) {
             return res.status(404).json({ message: `No product found with that id ${pid} ` });
         }
@@ -44,7 +44,11 @@ router.post("/", async (req, res) => {
     }
 
     try {
-        const newProduct = await productsManager.createProduct(req.body);
+        const newProduct = await productsManager.createOne(req.body);
+        if (newProduct.code === 11000) {
+
+            res.status(400).json({ message: `Product with code duplicated: ${newProduct.keyValue.code}`, product: newProduct });
+        }
         res.status(200).json({ message: 'Product created', product: newProduct });
 
     } catch (error) {
@@ -57,13 +61,8 @@ router.post("/", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
     const { pid } = req.params;
     try {
-        const product = await productsManager.getProductById(+pid);
-        if (!product) {
-            return res.status(404).json({ message: `No product found with that id ${pid} ` });
-        }
-        await productsManager.deleteProduct(+pid)
-        res.status(200).json({ message: 'Product deleted', product });
-
+        const deletedProduct = await productsManager.deleteOne(pid)
+        res.status(200).json({ message: 'Product deleted', deletedProduct });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -74,16 +73,16 @@ router.put("/:pid", async (req, res) => {
     const { pid } = req.params;
 
     try {
-        const product = await productsManager.getProductById(+pid);
-        
-        if (!product) {
-            return res.status(404).json({ message: `No product found with that id ${pid} ` });
-        }
-        // Actualizar el producto
-        await productsManager.updateProduct(+pid, req.body);
-        const productUpdated = await productsManager.getProductById(+pid);
+        const updateResult = await productsManager.updateOne({ _id: pid }, req.body);
 
-        res.status(200).json({ message: 'Product updated', product: productUpdated });
+        if (updateResult.matchedCount === 1) {
+            const updatedProduct = await productsManager.findById(pid);
+            // Devuelve el producto actualizado en la respuesta
+            res.status(200).json({ message: 'Product updated', product: updatedProduct });
+        } else {
+            // En caso de que no se encuentre el producto para actualizar
+            res.status(404).json({ message: 'Product not found' });
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

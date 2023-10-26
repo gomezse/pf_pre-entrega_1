@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { cartsManager } from '../CartsManager.js';
+import { cartsManager } from '../dao/models/mongoose/CartsManager.js';
 
 const router = Router();
 
 //new cart
 router.post("/", async (req, res) => {
     try {
-        const newCart= await cartsManager.createCart();
+        const newCart = await cartsManager.createCart();
         res.status(200).json({ message: 'Cart created', cart: newCart });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -18,9 +18,9 @@ router.post("/", async (req, res) => {
 router.get("/:cid", async (req, res) => {
     const { cid } = req.params;
     try {
-        const cart = await cartsManager.getCartById(+cid);
+        const cart = await cartsManager.getCartById(cid);
         if (!cart) {
-            return res.status(404).json({ message: `No cart found with that id ${cid}`});
+            return res.status(404).json({ message: `No cart found with that id ${cid}` });
         }
         res.status(200).json({ message: 'Cart found', cart });
 
@@ -31,10 +31,10 @@ router.get("/:cid", async (req, res) => {
 
 //add product to cart
 router.post("/:cid/product/:pid", async (req, res) => {
-    const {cid,pid}=req.params;
+    const { cid, pid } = req.params;
 
     try {
-        const newProduct = await cartsManager.addProductToCart(+cid,+pid);
+        const newProduct = await cartsManager.addProductToCart(cid, pid);
         res.status(200).json({ message: 'Product added to cart', product: newProduct });
 
     } catch (error) {
