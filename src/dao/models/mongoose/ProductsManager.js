@@ -49,18 +49,18 @@ class ProductsManager {
             };
 
             const response = await productsModel.paginate(query, options);
-            
+
             const info = {
                 status: response.status,
                 payload: response.docs,
                 totalPages: response.totalPages,
-                prevLink: response.hasPrevPage ? `http:localhost:8084/api/products?page=${response.prevPage}` : null,
-                nextLink: response.hasNextPage ? `http:localhost:8084/api/products?page=${response.nextPage}` : null,
+                prevLink: response.hasPrevPage ? `/products?page=${response.prevPage}&limit=${limit}&sort=${sort}` : null,
+                nextLink: response.hasNextPage ? `products?page=${response.nextPage}&limit=${limit}&sort=${sort}` : null,
                 page: response.page,
                 hasNextPage: response.hasNextPage,
                 hasPrevPage: response.hasPrevPage
             }
-            
+
             return info;
         } catch (error) {
             return error;

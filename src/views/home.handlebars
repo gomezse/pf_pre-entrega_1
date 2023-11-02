@@ -34,7 +34,7 @@
                                                         value="{{stock}}" type="number">
                                                     <button
                                                         onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                                                        class="plus"></button>
+                                                        class="plus">+</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -107,7 +107,7 @@
    {{#if hasPrev}}
  <li class="page-item">
     <button type="button" class="btn btn-primary">
-        <a class="page-link"style="color:#fff"  href="{{prev}}&limit={{limit}}&sort=1">Previous</a></li>
+        <a class="page-link"style="color:#fff"  href="{{prev}}">Previous</a></li>
     </button>
     
 {{else}}
@@ -118,11 +118,13 @@
   </li>
 {{/if}}
 
-   <li class="page-item"><a class="page-link" href="http://localhost:8084/api/products?limit{{limit?limit:10}}=1&page={{page}}&sort={{sort?sort:1}}">{{page}}</a></li>
+   <li class="page-item">
+  <a class="page-link" href="http://localhost:8084/products?limit={{#if limit}}{{limit}}{{else}}1{{/if}}&page={{page}}&sort={{#if sort}}{{sort}}{{else}}1{{/if}}">{{page}}</a>
+</li>
 
 {{#if hasNext}}
  <button type="button" class="btn btn-primary"   >
-        <a class="page-link" style="color:#fff" href="{{next}}&limit={{limit?limit:10}}&sort={{sort?sort:1}}">Next</a></li>
+        <a class="page-link" style="color:#fff" href="{{next}}">Next</a></li>
  </button>  
 {{else}}
   <button type="button" class="btn btn-primary" style=""disabled>
