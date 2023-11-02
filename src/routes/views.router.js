@@ -9,7 +9,7 @@ router.get(`/`, async (req, res) => {
   
   });
 
-  router.get(`/api/products`, async (req, res) => {
+  router.get(`/products`, async (req, res) => {
     const products = await productsManager.findAll(req.query);
     const {payload,totalPages,page,nextLink,prevLink,hasNextPage,hasPrevPage}=products;
     const productsObject = payload.map(product => product.toObject());
