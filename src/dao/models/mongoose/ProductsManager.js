@@ -24,14 +24,49 @@ class ProductsManager {
      * @param {number} limit - Límite de la cantidad de productos a devolver (opcional).
      * @returns {Promise<Array>} - Devuelve una matriz de productos.
      */
-    async findAll(limit = 0) {
+    // async findAll(limit = 0) {
+    //     try {
+    //         const products = await productsModel.find().limit(limit).lean();
+    //         return products;
+    //     } catch (error) {
+    //         return error;
+    //     }
+    // }
+
+
+    async findAll(obj) {
         try {
-            const products = await productsModel.find().limit(limit).lean();
-            return products;
+            //desestructurando variables del objeto.
+            const { limit = 10, page = 1, sort = 1, ...query } = obj;
+            
+            //defino tipo de sort a realizar.
+            const sortOption = sort === '1' ? 'price' : '-price';
+
+            const options = {
+                limit,
+                page,
+                sort: sortOption, 
+            };
+
+            const response = await productsModel.paginate(query, options);
+            
+            const info = {
+                status: response.status,
+                payload: response.docs,
+                totalPages: response.totalPages,
+                prevLink: response.hasPrevPage ? `http:localhost:8084/api/products?page=${response.prevPage}` : null,
+                nextLink: response.hasNextPage ? `http:localhost:8084/api/products?page=${response.nextPage}` : null,
+                page: response.page,
+                hasNextPage: response.hasNextPage,
+                hasPrevPage: response.hasPrevPage
+            }
+            
+            return info;
         } catch (error) {
             return error;
         }
     }
+
 
     /**
      * Encuentra un producto por su ID.

@@ -3,20 +3,20 @@ import { productsManager } from '../dao/models/mongoose/ProductsManager.js';
 
 const router = Router();
 
-//getAll
-router.get("/", async (req, res) => {
-    try {
-        const products = await productsManager.findAll(req.query.limit);
+//getAll , reeemplazado por el endpoint de views.
+// router.get("/", async (req, res) => {
+//     try {
+//         const info = await productsManager.findAll(req.query);
 
-        if (!products.length) {
-            return res.status(200).json({ message: 'No products' });
-        }
+//         if (!info.payload.length) {
+//             return res.status(200).json({ message: 'No products' });
+//         }
 
-        res.status(200).json({ message: 'Products found', products });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-})
+//         res.status(200).json({ message: 'Products found', info });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// })
 
 
 //getById

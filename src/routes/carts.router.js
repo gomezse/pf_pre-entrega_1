@@ -42,4 +42,70 @@ router.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
+//delete product from cart
+router.delete("/:cid/products/:pid", async (req, res) => {
+    const { cid, pid } = req.params;
+
+    try {
+        const deleteProduct = await cartsManager.removeProductToCart(cid, pid);
+        res.status(200).json({ message: 'Product remove to cart', product: deleteProduct });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+//delete all products from cart
+router.delete("/:cid", async (req, res) => {
+    const { cid} = req.params;
+
+    try {
+        const deleteProduct = await cartsManager.removeAllProductsToCart(cid);
+        res.status(200).json({ message: 'Products removed to cart', product: deleteProduct });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+//update
+router.put("/:cid/products/:pid", async (req, res) => {
+    const { cid,pid } = req.params;
+    const {quantity } = req.body;
+
+    try {
+        const updateResult = await cartsManager.updateQuantityProduct(cid,pid,quantity);
+
+        if (updateResult) {            
+            // Devuelve el producto actualizado en la respuesta
+            res.status(200).json({ message: 'Product updated', product: updateResult });
+        } else {
+            // En caso de que no se encuentre el producto para actualizar
+            res.status(404).json({ message: 'Product not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+//update array of products.
+router.put("/:cid", async (req, res) => {
+    const { cid} = req.params;
+    const {products } = req.body;
+
+    try {
+        const updatedCart = await cartsManager.updateAllProducts(cid, products);        
+        res.status(200).json({ message: 'Products updated', cart: updatedCart });
+    }
+    catch (error){
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+
 export default router;

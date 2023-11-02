@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import mongoosPaginate from "mongoose-paginate-v2";
+
 
 const cartsSchema = new mongoose.Schema({
   products: [
@@ -15,9 +17,17 @@ const cartsSchema = new mongoose.Schema({
   ],
 });
 
+
+
 cartsSchema.methods.toJSON = function () {
   const { __v, ...cart } = this.toObject();
   return cart;
 }
+
+cartsSchema.pre('find',function(){
+    this.populate('products.product');
+})
+
+cartsSchema.plugin(mongoosPaginate);
 
 export const cartsModel = mongoose.model("Carts", cartsSchema);
