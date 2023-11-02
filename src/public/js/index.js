@@ -15,11 +15,11 @@ Swal.fire({
     input: "text",
     inputValidator: (value) => {
         // Expresión regular para validar el formato de correo electrónico
-        // const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
-        // if (!emailRegex.test(value)) {
-        //     return "El correo ingresado no es valido.";
-        // }
+        if (!emailRegex.test(value)) {
+            return "El correo ingresado no es valido.";
+        }
 
     },
     confirmButtonText: "Enter",
@@ -102,3 +102,31 @@ form.onsubmit = (e) => {
     inputMessage.innerText = "";
     socketClient.emit("message", infoMessage);
 };
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  const addToCartLink = document.getElementById("addToCartLink");
+
+  if (addToCartLink) {
+    addToCartLink.addEventListener("click", function(event) {
+      event.preventDefault(); // Evita que el enlace navegue a la URL
+
+      // Obtiene la URL del enlace
+      const url = addToCartLink.getAttribute("href");
+
+      // Realiza la solicitud a la API usando fetch
+      fetch(url, {
+        method: "POST", // O el método adecuado para agregar productos al carrito
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Procesa la respuesta de la API, por ejemplo, mostrar un mensaje de éxito
+        console.log("Producto agregado al carrito:", data);
+      })
+      .catch(error => {
+        console.error("Error al agregar el producto al carrito:", error);
+      });
+    });
+  }
+});
+

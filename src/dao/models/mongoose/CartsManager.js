@@ -9,7 +9,7 @@ class CartsManager {
      */
     async getCartById(searchId) {
         try {
-            const cart = await cartsModel.findById(searchId).populate('products.product',['title','description']);
+            const cart = await cartsModel.findById(searchId).populate('products.product',['title','description','price','stock','thumbnails','category','code']);
             return cart;
         } catch (error) {
             throw new Error(error.message);
